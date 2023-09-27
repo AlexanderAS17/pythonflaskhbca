@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Account Management Center</title>
+        <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.min.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    </head>
+    <body class="blue-theme">
+        <h2>Welcone to Account Management Center!</h2>
+        <br><br>
+        <div class="container">
+            <button type="button" class="btn btn-warning menu-new" onclick="location.href='/addaccount';">Add Accounts</button>
+            <br><br><br>
+        </div>
+        <div class="container table-responsive">
+            <table class="table table-theme">
+                <thread>
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Balance</th>
+                        <th>Type</th>
+                        <th>Action</th>
+                    </tr>
+                </thread>
+                <!-- <tfoot>
+                    <tr>
+                        <th><input type="text" class="text-center form-control" placeholder="Search Customer Name" /></th>
+                        <th><input type="number" class="text-center form-control search-money-input" placeholder="Search Balance"/></th>
+                        <th><input type="text" class="text-center form-control" placeholder="Search Type" /></th>
+                        <th></th>
+                    </tr>
+                </tfoot> -->
+                <tbody>
+                    {% for account in accounts %}
+                    <tr>
+                        <td>{{ account.customer_name}}</td>
+                        <td>{{ account.balance}}</td>
+                        {%if account.type == 'Priority' %}
+                            <td style="background-color: aqua; color: navy;">Priority</td>
+                        {%else %}
+                            <td style="background-color: pink; color: navy;">Standart</td>
+                        {% endif %}
+                        <td>
+                            <button type="button" onclick="showUpdateForm('{{account.account_id}}', '{{account.customer_name}}',
+                            '{{account.balance}}', '{{account.type}}')" class="btn btn-success">Update</button>
+
+                            <button type="button" onclick="confirmDelete('{{account.account_id}}', '{{account.customer_name}}')" 
+                            class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br><br>
+            <div id="updateForm" style="display:none;">
+                <h3>Update Data:</h3>
+                <br>
+                <form action="/updateaccount" method="post" class="container">
+                    <input type="hidden" id="accountId" name="account_id">
+                    <div class=" form-group">
+                        <label class="field-label" for="customerName">Customer Name:</label>
+                        <input type="text" class="form-control" id="customerName" name="customer_name" placeholder="Customer Name" required>
+                    </div>
+                    <div class=" form-group">
+                        <label class="field-label" for="updateBalance">Customer Balance:</label>
+                        <input type="number" class="form-control" id="updateBalance" name="balance" placeholder="Customer Balance" required>
+                    </div>
+                    <div class=" form-group">
+                        <label class="field-label" for="updateType">Customer type:</label>
+                    <input type="text" class="form-control" id="updateType" name="type" placeholder="Customer type" required>
+                    </div>
+                    <div class=" form-group">
+                        <input type="submit" class="form-control" value="Submit" class="update-buttom">
+                    </div>
+                </form>
+            </div>
+            <script>
+                function showUpdateForm(id, customer_name, balance, type) {
+                    document.getElementById('accountId').value = id;
+                    document.getElementById('customerName').value = customer_name;
+                    document.getElementById('updateBalance').value = balance;
+                    document.getElementById('updateType').value = type;
+                    document.getElementById('updateForm').style.display = 'block';
+                }
+            </script>
+            <script>
+                function confirmDelete(account_id, customer_name) {
+                    const isConfirmed = confirm(`Apakah yakin akan mendelete data ${customer_name}?`);
+                    if (isConfirmed){
+                        fetch(`/deleteaccount/${account_id}`, { method: 'DELETE', redirect: 'follow'})
+                        .then(response => {
+                            render_template('error.html', pesan=response.json()), 404
+                            response.json()
+                        })
+                        .catch(function(err) {
+                            console.log('Error', err)
+                        });
+                    }
+                }
+            </script>
+        </div>
+        <div class="error_message container">
+            <br>
+            {{ pesan }}
+        </div>
+        <div class="container">
+            <a href="/" class="home-button">Back Home</a>
+        </div>
+    </body>
+</html>

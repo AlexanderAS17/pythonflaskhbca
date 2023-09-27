@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Add Account</title>
+        <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.min.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    </head>
+    <body class="blue-theme">
+        <h2>Input Account Data</h2>
+        <br><br>
+        <div class="form-controller">
+            <form action="/addaccount" method="post" class="container">
+                <div class="form-group">
+                    <label for="customer_name">Customer Name:</label>
+                    <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="Customer Name">
+                </div>
+                <div class="form-group">
+                    <label for="balance">Customer Balance:</label>
+                <input type="number" class="form-control" name="balance" id="balance" placeholder="Customer Balance">
+                </div>
+                <div class="form-group">
+                    <label for="type">Customer Type:</label>
+                    <select id="type" name="type" class="form-control">
+                        <option value="Priority">Priority</option>
+                        <option value="Standart">Standart</option>
+                    </select>
+                </div>
+                <br>
+                <input type="submit" value="Submit">
+            </form>
+            <br><br>
+            <div class="container">
+                <a href="/" class="home-button">Back Home</a>
+            </div>
+        </div>
+    </body>
+</html>

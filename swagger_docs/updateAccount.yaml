@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  title: Get Account Data
+  version: 1.0.0
+tags:
+  - name: API List
+
+parameters:
+  - name: account_id
+    in: path
+    description: Account ID
+    required: true
+    type: integer
+  - in: body
+    name: body
+    description: Account Data
+    required: true
+    $ref: '#/definitions/Accounts'
+
+response:
+  200:
+    description: Account Succesfully Updated
+    schema:
+      $ref: '#/definitions/Accounts'
+  404:
+    description: Account Not Found
+    schema:
+      $ref: '#/definitions/Accounts'

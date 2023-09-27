@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: Get Account Data
+  version: 1.0.0
+tags:
+  - name: API List
+
+parameters:
+  - in: body
+    name: body
+    description: Transaction Data
+    required: true
+    schema:
+      $ref: '#/definitions/Transactions'
+
+responses:
+  201:
+    description: Transaction Succesfully Added
+    schema:
+      $ref: '#/definitions/Transactions'
+  404:
+    description: Account Not Found
+    schema:
+      $ref: '#/definitions/Transactions'
+  500:
+    description: Error Occured
+    schema:
+      $ref: '#/definitions/Transactions'
+
+definitions:
+  Accounts:
+    type: object
+    properties:
+      account_id:
+        type: integer
+      amount:
+        type: integer
+      date:
+        type: date
+      type:
+        type: string
+    required:
+      - account_id
+      - amount
+      - date
+      - type

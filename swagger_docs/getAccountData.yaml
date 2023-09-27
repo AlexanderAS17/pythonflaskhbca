@@ -1,0 +1,31 @@
+openapi: 3.0.0
+info:
+  title: Get Account Data
+  version: 1.0.0
+tags:
+  - name: API List
+
+definitions:
+  Accounts:
+    type: object
+    properties:
+      account_id:
+        type: integer
+        description: Account ID
+      customer_name:
+        type: string
+        description: Customer Name
+      balance:
+        type: integer
+        description: Customer Balance
+      type:
+        type: string
+        description: Customer Type
+
+responses:
+  200:
+    description: Account List
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/Accounts'

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Transactions Management Center</title>
+        <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.min.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    </head>
+    <body class="blue-theme">
+        <h2>Welcone to Transactions Management Center!</h2>
+        <div class="container">
+            <button type="button" class="btn btn-warning menu-new" onclick="location.href='/addtransaction';">Add Transaction</button>
+            <br><br><br>
+        </div>
+        <div class="container table-responsive">
+            <table class="table table-theme">
+                <thread>
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.customer_name}}</td>
+                        <td>{{ transaction.amount}}</td>
+                        <td>{{ transaction.date}}</td>
+                        {%if transaction.type == 'expense' %}
+                            <td style="background-color: red; color: white;">Expense</td>
+                        {%else %}
+                            <td style="background-color: green; color: white;">Income</td>
+                        {% endif %}
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br><br>
+        </div>
+        <div class="error_message">
+            <br>
+            {{ pesan }}
+        </div>
+        <div class="container">
+            <a href="/" class="home-button">Back Home</a>
+        </div>
+    </body>
+</html>

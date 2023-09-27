@@ -1,0 +1,35 @@
+openapi: 3.0.0
+info:
+  title: Get Account Data
+  version: 1.0.0
+tags:
+  - name: API List
+
+parameters:
+  - in: body
+    name: body
+    description: Account Data
+    required: true
+    schema:
+      $ref: '#/definitions/Accounts'
+
+responses:
+  201:
+    description: Account Succesfully Added
+    schema:
+      $ref: '#/definitions/Accounts'
+
+definitions:
+  Accounts:
+    type: object
+    properties:
+      customer_name:
+        type: string
+      balance:
+        type: integer
+      type:
+        type: string
+    required:
+      - customer_name
+      - balance
+      - type

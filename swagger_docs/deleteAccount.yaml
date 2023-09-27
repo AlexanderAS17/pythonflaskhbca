@@ -1,0 +1,21 @@
+openapi: 3.0.0
+info:
+  title: Get Account Data
+  version: 1.0.0
+tags:
+  - name: API List
+
+parameters:
+  - name: account_id
+    in: path
+    description: Account ID
+    required: true
+    type: integer
+
+response:
+  200:
+    description: Account Succesfully Deleted
+  404:
+    description: Account Not Found
+  500:
+    description: Error Occured
