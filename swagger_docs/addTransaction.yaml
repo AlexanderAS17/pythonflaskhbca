@@ -28,9 +28,11 @@ responses:
       $ref: '#/definitions/Transactions'
 
 definitions:
-  Accounts:
+  Transactions:
     type: object
     properties:
+      transaction_id:
+        type: integer
       account_id:
         type: integer
       amount:
@@ -40,6 +42,7 @@ definitions:
       type:
         type: string
     required:
+      - transaction_id
       - account_id
       - amount
       - date
