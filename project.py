@@ -7,11 +7,15 @@ import os
 
 app = Flask(__name__)
 
-# Lokasi Database
-# DATABASE_PATH = 'C:/Users/u070501/Documents/Phyton/pythonflaskhbca/Project BCAFlaskh/project.db'
-
-# Konfigurasi
+#PROD
+# Lokasi Database & Konfigurasi
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:5dqHXLEdS6Ci89wI0gLe@containers-us-west-44.railway.app:6756/railway'
+
+#DEV
+# Lokasi Database & Konfigurasi
+# DATABASE_PATH = 'C:/Users/u070501/Documents/Phyton/pythonflaskhbca/Project BCAFlaskh/project.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_PATH
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['SWAGGER'] = {
@@ -123,23 +127,20 @@ def deleteKaryawan(account_id):
     try:
         accountDelete = Accounts.query.filter_by(account_id = account_id).first()
         if accountDelete:
-            print(int(accountDelete.balance) == 0)
             if int(accountDelete.balance) == 0:
-                try:
-                    db.session.delete(accountDelete)
-                    db.session.commit()
+                db.session.delete(accountDelete)
+                db.session.commit()
 
-                    allAccountTransactions = Transactions.query.filter_by(account_id = account_id).all()
-                    for transaction in allAccountTransactions:
-                        db.session.delete(transaction)
-                    db.session.commit()
-                    return render_template('confirmation.html', pesan='Account Succesfully Deleted'), 201
-                except Exception  as e:
-                    return render_template('error.html', pesan='Account Balance Must be 0 for Deleted'), 405  
+                allAccountTransactions = Transactions.query.filter_by(account_id = account_id).all()
+                for transaction in allAccountTransactions:
+                    db.session.delete(transaction)
+                db.session.commit()
+                return jsonify({'message': 'Account Succesfully Deleted'}), 201
+            return jsonify({'message': 'Account Balance Must be 0 for Deleted'}), 405
         else:
-            return render_template('error.html', pesan='Account Not Found'),404
+            return jsonify({'message': 'Account Not Found'}), 404
     except Exception  as e:
-        return render_template('error.html', pesan="Error Occured: {}".format(str(e))),500   
+        return jsonify({'error': f'Terjadi kesalahan: {str(e)}'}), 500
 
 @app.route('/transactions', methods=['GET'])
 @swag_from('swagger_docs/getAccountData.yaml')
@@ -217,4 +218,8 @@ def addTransaction():
             return render_template('error.html', pesan="Error Occured: {}".format(str(e))),500
 
 if __name__ == '__main__':
+    # PROD
     app.run(debug=True)
+
+    # DEV
+    # app.run(debug=True, port=5030)

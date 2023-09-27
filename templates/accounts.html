@@ -90,13 +90,18 @@
                     const isConfirmed = confirm(`Apakah yakin akan mendelete data ${customer_name}?`);
                     if (isConfirmed){
                         fetch(`/deleteaccount/${account_id}`, { method: 'DELETE', redirect: 'follow'})
-                        .then(response => {
-                            render_template('error.html', pesan=response.json()), 404
-                            response.json()
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message.includes("Must")) {
+                                alert('Account Balance Must be 0 for Deleted');
+                            } else {
+                                location.reload()
+                                alert('Account Succesfully Deleted')
+                            }
                         })
-                        .catch(function(err) {
-                            console.log('Error', err)
-                        });
+                        .catch(error => {
+                            console.error(status, error.toString())
+                        })
                     }
                 }
             </script>

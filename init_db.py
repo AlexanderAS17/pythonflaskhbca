@@ -1,7 +1,12 @@
 import sqlite3
 from sqlalchemy import create_engine, Column, Integer, String, MetaData, Table, Date, ForeignKey
 
+#PROD
 DATABASE_URI = 'mysql://root:5dqHXLEdS6Ci89wI0gLe@containers-us-west-44.railway.app:6756/railway'
+
+#DEV
+# DATABASE_URI = 'sqlite:///C:/Users/u070501/Documents/Phyton/pythonflaskhbca/Project BCAFlaskh/project.db'
+
 engine = create_engine(DATABASE_URI, echo=True)
 metadata = MetaData()
 
