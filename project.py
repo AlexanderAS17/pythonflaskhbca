@@ -183,12 +183,12 @@ def deleteKaryawan(account_id):
         accountDelete = Accounts.query.filter_by(account_id = account_id).first()
         if accountDelete:
             if int(accountDelete.balance) == 0:
-                db.session.delete(accountDelete)
-                db.session.commit()
-
                 allAccountTransactions = Transactions.query.filter_by(account_id = account_id).all()
                 for transaction in allAccountTransactions:
                     db.session.delete(transaction)
+                db.session.commit()
+
+                db.session.delete(accountDelete)
                 db.session.commit()
                 return jsonify({'message': 'Account Succesfully Deleted'}), 200
             return jsonify({'message': 'Account Balance Must be 0 for Deleted'}), 405

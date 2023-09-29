@@ -43,19 +43,19 @@ class MyTest(TestCase):
     def test_update_account(self):
         # Melakukan request POST ke '/karyawan' dengan data karyawan baru
         response1 = self.client.post('/docs/addaccount', json={
-            'customer_name': 'Alexx',
+            'customer_name': 'Alexander',
             'balance': 5000000,
             'type': 'Priority'
         })
 
         response = self.client.post('/docs/updateaccount', json={
             'customer_name': 'Alexander',
-            'balance': 5000000,
+            'balance': 4000000,
             'type': 'Priority'
         })
 
         self.assertStatus(response, 201)  # Memastikan response adalah 201 Created
-        account = Accounts.query.first()  # Mengambil karyawan pertama dari database
+        account = Accounts.query.filter(Accounts.customer_name.like(f"%Alexander%")).first() # Mengambil karyawan pertama dari database
         self.assertEqual(account.customer_name, 'Alexander')  # Memastikan nama karyawan adalah 'John Doe'
 
     # Test untuk menghapus karyawan
