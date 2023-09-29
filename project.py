@@ -161,7 +161,7 @@ def updateAccountApi():
         balance=data['balance']
         type=data['type']
 
-        account = Accounts.query.filter(customer_name==customer_name).first()
+        account = Accounts.query.filter(Accounts.customer_name.like(f"%{customer_name}%")).first()
 
         if not account:
             return jsonify({'message': 'Account Not Found'}), 404
@@ -298,7 +298,7 @@ def addTransactionApi():
     startdate = datetime.strptime(data['date'],'%Y-%m-%d')
 
     try:
-        account = Accounts.query.filter_by(customer_name = customer_name).first()
+        account = Accounts.query.filter(Accounts.customer_name.like(f"%{customer_name}%")).first()
         if account:
             if type == 'expense':
                 if int(account.balance) >= int(amount):
