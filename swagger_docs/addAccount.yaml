@@ -18,6 +18,8 @@ responses:
     description: Account Succesfully Added
     schema:
       $ref: '#/definitions/Accounts'
+  500:
+    description: Error Occured
 
 definitions:
   Accounts:
@@ -26,7 +28,7 @@ definitions:
       customer_name:
         type: string
       balance:
-        type: integer
+        type: number
       type:
         type: string
     required:

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, Response, json
 from flask import redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flasgger import Swagger, swag_from
@@ -60,9 +60,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/accounts', methods=['GET'])
-@swag_from('swagger_docs/getAccountData.yaml')
 def getAccountData():
-    print('masukk')
     accounts = []
     pesan = ''
     try:
@@ -83,8 +81,24 @@ def getAccountData():
     except Exception as e:
         return render_template('error.html', pesan="Error Occured: {}".format(str(e))),500
     
+@app.route('/docs/accounts', methods=['GET'])
+@swag_from('swagger_docs/getAccountData.yaml')
+def getAccountDataApi():
+    accounts = []
+    try:
+        allAccount = Accounts.query.all()
+        for account in allAccount:
+            account_data = {
+                'customer_name': account.customer_name,
+                'balance': account.balance,
+                'type': account.type,
+            }
+            accounts.append(account_data)
+        return Response(json.dumps(accounts),  mimetype='application/json')
+    except Exception as e:
+        return jsonify({'message': "Error Occured: {}".format(str(e))}), 500
+    
 @app.route('/addaccount', methods=['GET', 'POST'])
-@swag_from('swagger_docs/addAccount.yaml')
 def addAccount():
     if request.method == 'POST':
         newAccount = Accounts(
@@ -97,6 +111,23 @@ def addAccount():
 
         return render_template('confirmation.html', pesan='Account Succesfully Added'), 201
     return render_template('addaccount.html')
+
+@app.route('/docs/addaccount', methods=['POST'])
+@swag_from('swagger_docs/addAccount.yaml')
+def addAccountApi():
+    try:
+        data = request.json
+        newAccount = Accounts(
+            customer_name=data['customer_name'],
+            balance=data['balance'],
+            type=data['type']
+        )
+        db.session.add(newAccount)
+        db.session.commit()
+
+        return jsonify({'message': 'Account Succesfully Added'}), 201
+    except Exception as e:
+        return jsonify({'message': "Error Occured: {}".format(str(e))}), 500
 
 @app.route('/updateaccount', methods=['POST'])
 def updateAccount():
@@ -120,6 +151,30 @@ def updateAccount():
         return redirect(url_for('getAccountData'))
     except Exception  as e:
         return render_template('error.html', pesan="Error Occured: {}".format(str(e))),500
+
+@app.route('/docs/updateaccount', methods=['POST'])
+@swag_from('swagger_docs/updateAccount.yaml')
+def updateAccountApi():
+    try:
+        data = request.json
+        customer_name=data['customer_name']
+        balance=data['balance']
+        type=data['type']
+
+        account = Accounts.query.filter(customer_name==customer_name).first()
+
+        if not account:
+            return jsonify({'message': 'Account Not Found'}), 404
+       
+        account.customer_name = customer_name
+        account.balance = balance
+        account.type = type
+ 
+        db.session.commit()
+
+        return jsonify({'message': 'Account Succesfully Updated'}), 201
+    except Exception as e:
+        return jsonify({'message': "Error Occured: {}".format(str(e))}), 500
     
 @app.route('/deleteaccount/<int:account_id>', methods=['DELETE'])
 @swag_from('swagger_docs/deleteAccount.yaml')
@@ -135,15 +190,14 @@ def deleteKaryawan(account_id):
                 for transaction in allAccountTransactions:
                     db.session.delete(transaction)
                 db.session.commit()
-                return jsonify({'message': 'Account Succesfully Deleted'}), 201
+                return jsonify({'message': 'Account Succesfully Deleted'}), 200
             return jsonify({'message': 'Account Balance Must be 0 for Deleted'}), 405
         else:
             return jsonify({'message': 'Account Not Found'}), 404
     except Exception  as e:
-        return jsonify({'error': f'Terjadi kesalahan: {str(e)}'}), 500
+        return jsonify({'error': f'Error Occured: {str(e)}'}), 500
 
 @app.route('/transactions', methods=['GET'])
-@swag_from('swagger_docs/getAccountData.yaml')
 def getAllTransactions():
     transactionList = []
     pesan = ''
@@ -166,9 +220,26 @@ def getAllTransactions():
         return render_template('transactions.html', transactions=transactionList, pesan=pesan)
     except Exception as e:
         return render_template('error.html', pesan="Error Occured: {}".format(str(e))),500
+
+@app.route('/docs/transactions', methods=['GET'])
+@swag_from('swagger_docs/getTransactionData.yaml')
+def getAllTransactionsApi():
+    transactionList = []
+    try:
+        allTransaction = Transactions.query.join(Accounts, Transactions.account_id==Accounts.account_id).add_columns(Transactions.transaction_id, Transactions.account_id, Accounts.customer_name, Transactions.amount, Transactions.date, Transactions.type).all()
+        for transaction in allTransaction:
+            transaction_data = {
+                'customer_name': transaction.customer_name,
+                'amount': transaction.amount,
+                'date': transaction.date,
+                'type': transaction.type,
+            }
+            transactionList.append(transaction_data)
+        return Response(json.dumps(transactionList),  mimetype='application/json')
+    except Exception as e:
+        return jsonify({'message': "Error Occured: {}".format(str(e))}), 500
     
 @app.route('/addtransaction', methods=['GET', 'POST'])
-@swag_from('swagger_docs/addTransaction.yaml')
 def addTransaction():
     if request.method == 'POST':
         startdate = datetime.strptime(request.form['date'],'%Y-%m-%d')
@@ -216,6 +287,42 @@ def addTransaction():
             return render_template('addtransaction.html', accounts=accounts)
         except Exception as e:
             return render_template('error.html', pesan="Error Occured: {}".format(str(e))),500
+
+@app.route('/docs/addtransaction', methods=['POST'])
+@swag_from('swagger_docs/addTransaction.yaml')
+def addTransactionApi():
+    data = request.json
+    customer_name=data['customer_name']
+    amount=data['amount']
+    type=data['type']
+    startdate = datetime.strptime(data['date'],'%Y-%m-%d')
+
+    try:
+        account = Accounts.query.filter_by(customer_name = customer_name).first()
+        if account:
+            if type == 'expense':
+                if int(account.balance) >= int(amount):
+                    account.balance -= int(amount)
+                    db.session.commit()
+                else:
+                    return jsonify({'message': 'Amount Below Account Balance'}), 405
+            else:
+                account.balance += int(amount)
+                db.session.commit()
+        else:
+            return jsonify({'message': 'Account Not Found'}), 404
+        newTransaction = Transactions(
+            account_id=account.account_id,
+            amount=amount,
+            date=startdate,
+            type=type
+        )
+        db.session.add(newTransaction)
+        db.session.commit()
+
+        return jsonify({'message': 'Transaction Succesfully Added'}), 201
+    except Exception  as e:
+        return jsonify({'message': "Error Occured: {}".format(str(e))}), 500
 
 if __name__ == '__main__':
     # PROD

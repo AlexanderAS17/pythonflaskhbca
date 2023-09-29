@@ -22,6 +22,10 @@ responses:
     description: Account Not Found
     schema:
       $ref: '#/definitions/Transactions'
+  405:
+    description: Amount Below Account Balance
+    schema:
+      $ref: '#/definitions/Transactions'
   500:
     description: Error Occured
     schema:
@@ -31,19 +35,21 @@ definitions:
   Transactions:
     type: object
     properties:
-      transaction_id:
-        type: integer
-      account_id:
-        type: integer
+      customer_name:
+        type: string
+        description: Customer Name
       amount:
         type: integer
+        description: Transaction Amount
       date:
-        type: date
+        type: string
+        format: date
+        description: Transaction Date
       type:
         type: string
+        description: Transaction Type (Priority/Expense)
     required:
-      - transaction_id
-      - account_id
+      - customer_name
       - amount
       - date
       - type

@@ -12,10 +12,12 @@ parameters:
     required: true
     type: integer
 
-response:
+responses:
   200:
     description: Account Succesfully Deleted
   404:
     description: Account Not Found
+  405:
+    description: Account Balance Must be 0 for Deleted
   500:
     description: Error Occured

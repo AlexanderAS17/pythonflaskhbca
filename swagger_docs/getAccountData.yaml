@@ -9,9 +9,6 @@ definitions:
   Accounts:
     type: object
     properties:
-      account_id:
-        type: integer
-        description: Account ID
       customer_name:
         type: string
         description: Customer Name
@@ -29,3 +26,5 @@ responses:
       type: array
       items:
         $ref: '#/definitions/Accounts'
+  500:
+    description: Error Occured
