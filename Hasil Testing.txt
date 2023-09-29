@@ -1,0 +1,8 @@
+PS C:\Users\u070501\Documents\Phyton\pythonflaskhbca> & c:/Users/u070501/Documents/Phyton/pythonflaskhbca/Scripts/python.exe "c:/Users/u070501/Documents/Phyton/pythonflaskhbca/Project BCAFlaskh/test_app.py"
+..c:\Users\u070501\Documents\Phyton\pythonflaskhbca\Project BCAFlaskh\test_app.py:71: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  self.assertIsNone(Accounts.query.get(account.account_id))  # Memastikan karyawan dengan id tersebut sudah dihapus
+.....
+----------------------------------------------------------------------
+Ran 7 tests in 0.369s
+
+OK
